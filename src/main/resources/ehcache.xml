@@ -1,0 +1,55 @@
+<ehcache>
+	<!-- 设置Ehcache的默认过期策略 -->
+	<!-- 
+		默认只有一个<defaultCache>标签，默认使用的缓存配置
+			也可以自定义，使用<cache>标签，使用name属性进行区分。
+		name:缓存的名字
+		maxElementsInMemory：最大缓存对象数量，超出该数量会序列化到硬盘中。
+		maxElementsOnDisk:硬盘中最大的缓存对象数量【0表示无穷大】
+		eternal:对象是否永久有效。默认为false，如果为true，则忽略timeToIdleSeconds和timeToLiveSeconds
+		overflowToDisk:当内存中对象的数量达到maxElementsInMemory数量时，会序列化到磁盘中。
+		timeToIdleSeconds:当数据闲置n秒后[n秒内不被命中]，就被删除
+		timeToLiveSeconds:数据最多存活n秒后，就会被从缓存中清除。
+		maxElementsOnDisk:硬盘上最大对象存储数量。
+		diskPersistent:在VM重启的时候是否持久化磁盘缓存，默认是false
+		memoryStoreEvictionPolicy:缓存策略：
+										LRU：最近最少使用原则
+										 如果一个数据最近用的比较少，意味着未来也很少用到
+										 
+										 LFU：最少使用原则
+										 如果整个期间，使用的最少的元素，很可能不怎用
+										 
+										 FIFO：先进先出原则
+										 最早缓存的数据，在未来用的更少，所以最先缓存的数据，最早消失
+								
+	-->
+    <!--缓存文件的存放目录 D://ehcache-->
+    <diskStore path="com.baizhi.cmfz.shiro"/>
+    <!--默认的缓存配置
+     对象
+    -->
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="false"
+            diskPersistent="false"
+            memoryStoreEvictionPolicy="LRU"
+            />
+    <!--
+        自定义配置
+    -->
+    <cache name="authorizationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true"
+           memoryStoreEvictionPolicy="LRU">
+    </cache>
+
+</ehcache>
+
+

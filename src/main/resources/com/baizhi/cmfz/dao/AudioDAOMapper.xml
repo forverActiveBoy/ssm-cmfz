@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.AudioDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Audio" id="audioMap">
+		<id column="yin_id" property="id"/>
+		<result column="yin_name" property="name"/>
+		<result column="yin_url" property="url"/>
+		<result column="yin_size" property="size"/>
+		<result column="yin_count" property="count"/>
+		<association property="listen" javaType="com.baizhi.cmfz.entity.Listen">
+			<id column="wen_id" property="id"/>
+			<result column="wen_name" property="name"/>
+			<result column="wen_author" property="author"/>
+			<result column="wen_teller" property="teller"/>
+			<result column="wen_Episodes" property="episodes"/>
+			<result column="wen_date" property="createDate"/>
+			<result column="wen_content" property="content"/>
+			<result column="wen_image" property="image"/>
+			<result column="wen_star" property="star"/>
+		</association>
+	</resultMap>
+
+	<insert id="insert">
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select uuid() from dual
+		</selectKey>
+		insert into cmfz_wen_yin values(#{id},#{name},#{listen.id},#{url},#{size},#{count})
+	</insert>
+
+	<delete id="deletes">
+		delete from cmfz_wen_yin where yin_id in
+		<foreach collection="array" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="update">
+		update cmfz_wen_yin set yin_name = #{name}, yin_url = #{url}, yin_size = #{size}, yin_count = #{count}
+		where yin_id = #{id}
+	</update>
+
+	
+	<select id="selectAllByAlbumId" resultMap="audioMap">
+		select y.*,w.* from cmfz_wen_yin y
+		left join cmfz_wen w
+		on y.wen_id = w.wen_id
+		where y.wen_id = #{id}
+	</select>
+
+	<select id="selectAll" resultMap="audioMap">
+		select y.*,w.* from cmfz_wen_yin y
+		left join cmfz_wen w
+		on y.wen_id = w.wen_id
+		limit #{0},#{1}
+	</select>
+
+	<select id="selectOne" resultMap="audioMap">
+		select y.*,w.* from cmfz_wen_yin y
+		left join cmfz_wen w
+		on y.wen_id = w.wen_id
+		where y.yin_id = #{id}
+	</select>
+
+	<select id="selectAllAudio" resultMap="audioMap">
+		select y.*,w.* from cmfz_wen_yin y
+		left join cmfz_wen w
+		on y.wen_id = w.wen_id
+	</select>
+
+	<select id="selectCount" resultType="int">
+		select count(*) from cmfz_wen_yin
+	</select>
+
+
+	
+</mapper>

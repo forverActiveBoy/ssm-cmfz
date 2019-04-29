@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.ResourcesDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Resource" id="resourceMap">
+		<id column="id" property="id"/>
+		<result column="resname" property="name"/>
+		<result column="resurl" property="url"/>
+		<result column="restype" property="type"/>
+		<result column="rescode" property="code"/>
+		<collection property="resourceList" ofType="com.baizhi.cmfz.entity.Resource">
+			<id column="cid" property="id"/>
+			<result column="cresname" property="name"/>
+			<result column="cresurl" property="url"/>
+			<result column="crestype" property="type"/>
+			<result column="crescode" property="code"/>
+		</collection>
+	</resultMap>
+	
+	<select id="selectAll" resultMap="resourceMap">
+		select p.*,c.id cid,c.resname cresname,c.resurl cresurl,
+		c.restype crestype,c.rescode crescode
+		from shiro_resource p
+		left join shiro_resource c
+		on c.parent_id = p.id
+		where p.parent_id is null
+	</select>
+
+
+	<!--查询顶级资源-->
+	<select id="selectParentResource" resultMap="resourceMap">
+		select * from shiro_resource where parent_id is null
+	</select>
+	<!--查询当前资源的子级资源-->
+	<select id="selectSonResource" resultMap="resourceMap">
+		select * from shiro_resource where parent_id=#{parent_id}
+	</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.BannerDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Banner" id="bannerMap">
+		<id column="banner_id" property="id"/>
+		<result column="banner_image" property="image"/>
+		<result column="banner_name" property="name"/>
+		<result column="banner_status" property="status"/>
+		<result column="banner_dec" property="dec"/>
+	</resultMap>
+	
+	<select id="selectShowBanner" resultMap="bannerMap">
+		select * from cmfz_banner where banner_id = #{id}
+	</select>
+
+	<update id="update">
+		update cmfz_banner set banner_image = #{image}, banner_name = #{name}, banner_status = #{status}, banner_dec = #{dec}
+		where banner_id = #{id}
+	</update>
+
+	<insert id="insert">
+		insert into cmfz_banner values(null,#{image},#{name},#{status},#{dec})
+	</insert>
+
+	<delete id="deletes">
+		delete from cmfz_banner where banner_id in
+		<foreach collection="array" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="selectAll" resultMap="bannerMap">
+		select * from cmfz_banner limit #{0},#{1}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		select count(*) from cmfz_banner
+	</select>
+	
+</mapper>

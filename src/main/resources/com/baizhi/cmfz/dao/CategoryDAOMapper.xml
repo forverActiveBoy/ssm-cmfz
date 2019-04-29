@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.CategoryDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Category" id="categoryMap">
+		<id column="xiu_id" property="id"/>
+		<result column="xiu_name" property="name"/>
+		<association property="user" javaType="com.baizhi.cmfz.entity.User">
+			<id column="user_id" property="id"/>
+			<result column="user_image" property="imageName"/>
+			<result column="nickname" property="nikename"/>
+			<result column="name" property="name"/>
+		</association>
+
+	</resultMap>
+
+	<insert id="insert">
+		<selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE">
+			select uuid() from dual
+		</selectKey>
+		insert into cmfz_xiu values(#{id},#{name},null)
+	</insert>
+
+	<delete id="deletes">
+		delete from cmfz_xiu where xiu_id in
+		<foreach collection="array" open="(" separator="," close=")" item="id">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="selectAll" resultMap="categoryMap">
+		select * from cmfz_xiu where user_id is null or user_id = #{id} order by user_id
+	</select>
+
+	<select id="selectDefault" resultMap="categoryMap">
+		select * from cmfz_xiu where user_id is null
+	</select>
+
+	<select id="selectDefaultCount" resultType="int">
+		select count(*) from cmfz_xiu where user_id is null
+	</select>
+
+	<update id="update">
+		update cmfz_xiu set xiu_name = #{name} where xiu_id = #{id}
+	</update>
+	
+</mapper>

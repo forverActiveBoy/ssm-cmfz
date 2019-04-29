@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.LessionDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Lession" id="lessionMap">
+		<id column="count_id" property="id"/>
+		<result column="count_name" property="name"/>
+		<result column="count_date" property="overtime"/>
+		<result column="count_count" property="count"/>
+	</resultMap>
+	
+	<insert id="insert">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+			select uuid() from dual
+		</selectKey>
+		insert into cmfz_xiu_count values(#{id},#{name},sysdate(),#{category.id},#{user.id},0)
+	</insert>
+
+	<delete id="delete">
+		delete from cmfz_xiu_count where count_id = #{id}
+	</delete>
+
+	<update id="update">
+		update cmfz_xiu_count set count_name = #{name}, count_count = #{count}, count_date = sysdate()
+		where count_id = #{id}
+	</update>
+
+	<select id="selectOne" resultMap="lessionMap">
+		select * from cmfz_xiu_count where count_id = #{id}
+	</select>
+
+	<select id="selectAllByUser" resultMap="lessionMap">
+		select * from cmfz_xiu_count where xiu_id = #{0} and user_id = #{1}
+	</select>
+
+</mapper>

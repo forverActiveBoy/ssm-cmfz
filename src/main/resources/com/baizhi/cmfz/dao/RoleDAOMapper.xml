@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.RoleDAO">
+
+	<resultMap type="com.baizhi.cmfz.entity.Role" id="roleMap">
+		<id column="id" property="id"/>
+		<result column="rolename" property="rolename"/>
+		
+	</resultMap>
+
+	<resultMap type="com.baizhi.cmfz.entity.Resource" id="resourceMap">
+		<id column="id" property="id"/>
+		<result column="resname" property="name"/>
+		<result column="resurl" property="url"/>
+		<result column="restype" property="type"/>
+		<result column="rescode" property="code"/>
+		<collection property="resourceList" ofType="com.baizhi.cmfz.entity.Resource">
+			<id column="cid" property="id"/>
+			<result column="cresname" property="name"/>
+			<result column="cresurl" property="url"/>
+			<result column="crestype" property="type"/>
+			<result column="crescode" property="code"/>
+		</collection>
+	</resultMap>
+
+	<!--查询所有角色-->
+	<select id="selectAll" resultMap="roleMap">
+		select * from shiro_role limit #{0},#{1}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		select count(*) from shiro_role
+	</select>
+
+	<select id="selectAllRole" resultMap="roleMap">
+		select * from shiro_role
+	</select>
+
+	<select id="selectOne" resultMap="roleMap">
+		select * from shiro_role where id = #{id}
+	</select>
+
+    <select id="selectRoles" resultMap="roleMap">
+        select * from shiro_role where id in
+        <foreach collection="array" close=")" separator="," open="(" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+	<!-- 根据角色名查询顶级资源-->
+	<select id="selectParentResourceByRoleName" resultMap="resourceMap">
+		select s2.* from shiro_role_resource s1 RIGHT JOIN shiro_resource s2
+		on s1.resid=s2.id
+		where s1.rolename=#{rolename} and s2.parent_id is null
+	</select>
+
+	<!-- 根据角色名查询顶级资源-->
+	<select id="selectParentResourcesByRoleName" resultMap="resourceMap">
+		select distinct s2.* from shiro_role_resource s1 RIGHT JOIN shiro_resource s2
+		on s1.resid=s2.id
+		where s1.rolename in <foreach collection="array" item="username" open="(" separator="," close=")">
+		#{username}
+	</foreach>
+			and s2.parent_id is null
+	</select>
+
+	<!--查询当前角色的子级资源-->
+	<select id="selectSonResource" resultMap="resourceMap">
+		select s2.* from shiro_role_resource s1 RIGHT JOIN shiro_resource s2
+		on s1.resid=s2.id
+		where s1.rolename=#{roleName} and s2.parent_id =#{parentId}
+	</select>
+
+	<!--查询角色的子级资源-->
+	<select id="selectSonResources" resultMap="resourceMap">
+		select distinct s2.* from shiro_role_resource s1 RIGHT JOIN shiro_resource s2
+		on s1.resid=s2.id
+		where s1.rolename in <foreach collection="roleNames" item="rolename" open="(" separator="," close=")">
+		#{rolename}
+	</foreach>
+		and s2.parent_id =#{parentId}
+	</select>
+
+	<delete id="deleteRoleResource">
+		delete from shiro_role_resource where rolename = #{rolename}
+	</delete>
+
+	<delete id="deleteAdminRole">
+		delete from shiro_amdin_role where roleid = #{id}
+	</delete>
+
+    <delete id="deletes">
+        delete from shiro_role where id in
+        <foreach collection="array" close=")" separator="," open="(" item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+	<update id="update">
+		update shiro_role set rolename = #{rolename} where id = #{id}
+	</update>
+
+	<insert id="insert">
+		insert into shiro_role values (null,#{rolename})
+	</insert>
+	
+	<insert id="insertRoleResource">
+		insert into shiro_role_resource values (null,#{0},#{1})
+	</insert>
+
+	<select id="selectAllRoleByAdmin" resultMap="roleMap">
+		select sr.* from shiro_role sr
+		left join shiro_amdin_role sar
+		on sr.id = sar.roleid
+		where sar.username = #{username}
+	</select>
+	
+</mapper>
